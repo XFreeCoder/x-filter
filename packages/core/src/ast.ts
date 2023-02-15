@@ -1,133 +1,64 @@
-// reference https://github.com/makenotion/notion-sdk-js/blob/ebf5c7411b331b8e4930151d22c539a248ac749c/src/api-endpoints.ts#L9219
-
 export type EmptyObject = Record<string, never>;
 
-export type ExistencePropertyFilter =
-  | { is_empty: true }
-  | { is_not_empty: true };
+export type ExistencePropertyRule = { isEmpty: true } | { isNotEmpty: true };
 
-export type TextPropertyFilter =
+export type TextPropertyRule =
   | { equals: string }
-  | { does_not_equal: string }
+  | { doesNotEqual: string }
   | { contains: string }
-  | { does_not_contain: string }
-  | { starts_with: string }
-  | { ends_with: string }
-  | ExistencePropertyFilter;
+  | { doesNotContain: string }
+  | { startsWith: string }
+  | { endsWith: string }
+  | ExistencePropertyRule;
 
-export type NumberPropertyFilter =
+export type NumberPropertyRule =
   | { equals: number }
-  | { does_not_equal: number }
-  | { greater_than: number }
-  | { less_than: number }
-  | { greater_than_or_equal_to: number }
-  | { less_than_or_equal_to: number }
-  | ExistencePropertyFilter;
+  | { doesNotEqual: number }
+  | { greaterThan: number }
+  | { lessThan: number }
+  | { greaterThanOrEqualTo: number }
+  | { lessThanOrEqualTo: number }
+  | ExistencePropertyRule;
 
-export type CheckboxPropertyFilter =
+export type CheckboxPropertyRule =
   | { equals: boolean }
-  | { does_not_equal: boolean };
+  | { doesNotEqual: boolean };
 
-export type SelectPropertyFilter =
+export type SelectPropertyRule =
   | { equals: string }
-  | { does_not_equal: string }
-  | ExistencePropertyFilter;
+  | { doesNotEqual: string }
+  | ExistencePropertyRule;
 
-export type MultiSelectPropertyFilter =
+export type MultiSelectPropertyRule =
   | { contains: string }
-  | { does_not_contain: string }
-  | ExistencePropertyFilter;
+  | { doesNotContain: string }
+  | ExistencePropertyRule;
 
-export type StatusPropertyFilter =
-  | { equals: string }
-  | { does_not_equal: string }
-  | ExistencePropertyFilter;
-
-export type DatePropertyFilter =
+export type DatePropertyRule =
   | { equals: string }
   | { before: string }
   | { after: string }
-  | { on_or_before: string }
-  | { on_or_after: string }
-  | { this_week: EmptyObject }
-  | { past_week: EmptyObject }
-  | { past_month: EmptyObject }
-  | { past_year: EmptyObject }
-  | { next_week: EmptyObject }
-  | { next_month: EmptyObject }
-  | { next_year: EmptyObject }
-  | ExistencePropertyFilter;
+  | { onOrBefore: string }
+  | { onOrAfter: string }
+  | { thisWeek: EmptyObject }
+  | { pastWeek: EmptyObject }
+  | { pastMonth: EmptyObject }
+  | { pastYear: EmptyObject }
+  | { nextWeek: EmptyObject }
+  | { nextMonth: EmptyObject }
+  | { nextYear: EmptyObject }
+  | ExistencePropertyRule;
 
-export type FormulaPropertyFilter =
-  | { string: TextPropertyFilter }
-  | { checkbox: CheckboxPropertyFilter }
-  | { number: NumberPropertyFilter }
-  | { date: DatePropertyFilter };
-
-export type PropertyFilter =
-  | { title: TextPropertyFilter; property: string; type?: "title" }
-  | { rich_text: TextPropertyFilter; property: string; type?: "rich_text" }
-  | { number: NumberPropertyFilter; property: string; type?: "number" }
-  | { checkbox: CheckboxPropertyFilter; property: string; type?: "checkbox" }
-  | { select: SelectPropertyFilter; property: string; type?: "select" }
-  | {
-      multi_select: MultiSelectPropertyFilter;
-      property: string;
-      type?: "multi_select";
-    }
-  | { status: StatusPropertyFilter; property: string; type?: "status" }
-  | { date: DatePropertyFilter; property: string; type?: "date" }
-  | { files: ExistencePropertyFilter; property: string; type?: "files" }
-  | { url: TextPropertyFilter; property: string; type?: "url" }
-  | { email: TextPropertyFilter; property: string; type?: "email" }
-  | {
-      phone_number: TextPropertyFilter;
-      property: string;
-      type?: "phone_number";
-    }
-  | {
-      created_time: DatePropertyFilter;
-      property: string;
-      type?: "created_time";
-    }
-  | {
-      last_edited_time: DatePropertyFilter;
-      property: string;
-      type?: "last_edited_time";
-    }
-  | { formula: FormulaPropertyFilter; property: string; type?: "formula" };
-
-export type TimestampCreatedTimeFilter = {
-  created_time: DatePropertyFilter;
-  timestamp: "created_time";
-  type?: "created_time";
+export type PropertyFilter<Rule> = {
+  property: string;
+  rule: Rule;
 };
 
-export type TimestampLastEditedTimeFilter = {
-  last_edited_time: DatePropertyFilter;
-  timestamp: "last_edited_time";
-  type?: "last_edited_time";
-};
-
-export type Filter =
+export type Filter<Rule> =
   | {
-      or: Array<
-        | PropertyFilter
-        | TimestampCreatedTimeFilter
-        | TimestampLastEditedTimeFilter
-        | { or: Array<PropertyFilter> }
-        | { and: Array<PropertyFilter> }
-      >;
+      or: Array<Filter<PropertyFilter<Rule>>>;
     }
   | {
-      and: Array<
-        | PropertyFilter
-        | TimestampCreatedTimeFilter
-        | TimestampLastEditedTimeFilter
-        | { or: Array<PropertyFilter> }
-        | { and: Array<PropertyFilter> }
-      >;
+      and: Array<Filter<PropertyFilter<Rule>>>;
     }
-  | PropertyFilter
-  | TimestampCreatedTimeFilter
-  | TimestampLastEditedTimeFilter;
+  | PropertyFilter<Rule>;
